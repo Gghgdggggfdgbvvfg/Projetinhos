@@ -1,4 +1,4 @@
-import {archive} from './arquivo.js';
+import {archive} from './arquivo.js?v=vestibulo';
 import {projects as beginner} from './iniciante/index.js';
 import {projects as middle} from './intermediario/index.js';
 import {projects as advanced} from './avancado/index.js';
@@ -15,7 +15,7 @@ const el = (tag,content,className) => {
  return node;
 };
 function image(project) {
- const img=el('img'); img.src='./imagens/'+project.picture+'.jpg'; img.alt='Captura de '+project.title; img.loading='lazy'; return img;
+ const img=el('img'); img.src='./imagens/'+project.picture; img.alt='Captura de '+project.title; img.loading='lazy'; return img;
 }
 for(const project of archive) {
  const card=el('a',null,'work'); card.href='#arquivo/'+project.id;
@@ -26,7 +26,7 @@ let feature=0;
 function cycle(delta) {
  feature=(feature+delta+4)%4;
  const p=archive[feature], img=find('hero-image');
- img.src='./imagens/'+p.picture+'.jpg'; img.alt='Captura de '+p.title;
+ img.src='./imagens/'+p.picture; img.alt='Captura de '+p.title;
  const link=find('feature-link'); link.href='#arquivo/'+p.id; link.textContent=p.title+' ↗';
 }
 find('prev').onclick=()=>cycle(-1); find('next').onclick=()=>cycle(1);

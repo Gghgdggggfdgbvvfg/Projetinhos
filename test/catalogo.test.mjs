@@ -16,7 +16,7 @@ test('o índice expõe os 48 projetos com rotas próprias',()=>{
 test('cada captura e cada download do arquivo existem',async()=>{
  assert.equal(archive.length,8);
  for(const p of archive){
-  if(p.picture)await access(new URL('../dist/imagens/'+p.picture+'.jpg',import.meta.url));
+  if(p.picture)await access(new URL('../dist/imagens/'+p.picture,import.meta.url));
   if(p.file)await access(new URL('../dist/arquivo/'+p.file,import.meta.url));
  }
 });
