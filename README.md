@@ -1,5 +1,7 @@
 # Caderno de programação
 
+[Abrir o portfólio no GitHub Pages](https://gghgdggggfdgbvvfg.github.io/Projetinhos/)
+
 Portfólio de jogos, sites e 48 projetos de estudo. O índice tem busca por assunto, filtro por nível e links diretos para cada demonstração.
 
 ![SPLIT — One More Cut, uma das telas do arquivo de jogos](dist/imagens/split.jpg)

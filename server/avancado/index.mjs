@@ -85,7 +85,12 @@ export async function handle(req,res,url) {
     if(route==="/lookup" && req.method==="GET"){const raw=url.searchParams.get("id");const found=/^\d{1,4}$/.test(raw||"")&&catalog.get(Number(raw));
       if(!found)json(res,404,{error:"Peça desconhecida."});else{res.writeHead(200,{"Content-Type":"application/json","Cache-Control":"no-store"});res.end(found);}return true;}
     if(route==="/checks" && req.method==="POST"){
-      checks??=promisify(execFile)(process.execPath,["--test",fileURLToPath(new URL("./domain.test.mjs",import.meta.url))],{timeout:15000,windowsHide:true}).then(({stdout})=>stdout.split(/\r?\n/).filter(x=>/^ok \d|^✔/.test(x))).finally(()=>{checks=null;});json(res,200,{lines:await checks});return true;
+      const env={...process.env};
+      delete env.NODE_TEST_CONTEXT;
+      checks??=promisify(execFile)(process.execPath,["--test","--test-reporter=tap",fileURLToPath(new URL("./domain.test.mjs",import.meta.url))],{env,timeout:15000,windowsHide:true})
+        .then(({stdout})=>stdout.split(/\r?\n/).filter(x=>/^ok \d/.test(x)))
+        .finally(()=>{checks=null;});
+      json(res,200,{lines:await checks});return true;
     }
     if(!route.startsWith("/state/")||!ids.has(id)){json(res,404,{error:"Projeto desconhecido."});return true;}
     const session=id==="chat"?"sala":sessionFor(req,res);
@@ -96,13 +101,19 @@ export async function handle(req,res,url) {
   return true;
 }
 function frame(op,payload){
-  const bytes=Buffer.from(payload);const long=bytes.length>125;
-  const head=Buffer.alloc(long?4:2);head[0]=128|op;head[1]=long?126:bytes.length;if(long)head.writeUInt16BE(bytes.length,2);return Buffer.concat([head,bytes]);
+  const bytes=Buffer.from(payload);
+  const width=bytes.length<126?0:bytes.length<=65535?2:8;
+  const head=Buffer.alloc(2+width);
+  head[0]=128|op;
+  head[1]=width===0?bytes.length:width===2?126:127;
+  if(width===2)head.writeUInt16BE(bytes.length,2);
+  if(width===8)head.writeBigUInt64BE(BigInt(bytes.length),2);
+  return Buffer.concat([head,bytes]);
 }
 function broadcast(state){const bytes=frame(1,JSON.stringify({state}));for(const socket of sockets){if(socket.writableLength>128*1024)socket.destroy();else socket.write(bytes);}}
 export function attach(server){
   server.on("upgrade",(req,socket,head)=>{
-    if(req.url!==api+"/chat")return;
+    if(req.url!==api+"/chat"){socket.end("HTTP/1.1 404 Not Found\r\n\r\n");return;}
     if(req.headers.upgrade?.toLowerCase()!=="websocket"||req.headers["sec-websocket-version"]!=="13" || !/^[A-Za-z0-9+/]{22}==$/.test(req.headers["sec-websocket-key"]||"") || (req.headers.origin && req.headers.origin!==((req.socket.encrypted?"https://":"http://")+req.headers.host))){socket.end("HTTP/1.1 403 Forbidden\r\n\r\n");return;}
     const accept=createHash("sha1").update(req.headers["sec-websocket-key"]+"258EAFA5-E914-47DA-95CA-C5AB0DC85B11").digest("base64");
     socket.write("HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: "+accept+"\r\n\r\n");
