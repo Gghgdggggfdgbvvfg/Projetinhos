@@ -4,13 +4,13 @@
 .int-app p {margin:.3rem 0;overflow-wrap:anywhere;white-space:pre-line}
 .int-app form {display:flex;align-items:end;flex-wrap:wrap;gap:.65rem;margin:.7rem 0}
 .int-app label {display:grid;gap:.2rem;font:inherit;font-size:.85rem;flex:1 1 8.5rem}
-.int-app input,.int-app select,.int-app textarea {box-sizing:border-box;width:100%;min-width:0;background:white;color:#191e1b;border:1px solid #9a9b8d;border-radius:4px;padding:.55rem;font:inherit}
+.int-app input,.int-app select,.int-app textarea {box-sizing:border-box;width:100%;min-width:0;background:white;color:var(--ink);border:1px solid #7896b5;border-radius:4px;padding:.55rem;font:inherit}
 .int-app textarea {min-height:5rem}
-.int-app button,.int-app .int-link {border:1px solid #33473a;border-radius:4px;background:#304f3d;color:white;padding:.48rem .75rem;cursor:pointer;font:inherit;font-size:.9rem;line-height:1.35}
+.int-app button,.int-app .int-link {border:1px solid var(--blue);border-radius:4px;background:var(--blue);color:white;padding:.48rem .75rem;cursor:pointer;font:inherit;font-size:.9rem;line-height:1.35}
 .int-app button:disabled {opacity:.65}
-.int-row {display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;padding:.7rem 0;border-bottom:1px solid #a1a18d70}
+.int-row {display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;padding:.7rem 0;border-bottom:1px solid var(--rule)}
 .int-row>div:first-child {flex:1 1 12rem;min-width:0;overflow-wrap:anywhere}
 .int-status {font-weight:600}
 .int-metric {font-size:1.65rem;font-weight:650}
 .int-app pre {white-space:pre-wrap;word-break:break-word;font-size:.85rem}
-.int-app progress {max-width:100%;accent-color:#526f51}
+.int-app progress {max-width:100%;accent-color:var(--blue)}
