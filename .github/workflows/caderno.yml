@@ -1,0 +1,35 @@
+name: Verificar e empacotar portfólio
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test
+      - name: Verificar servidor e demonstrações
+        run: |
+          node server.mjs &
+          trap 'kill $!' EXIT
+          curl --fail --retry 5 --retry-connrefused http://127.0.0.1:3000/
+          curl --fail http://127.0.0.1:3000/api/intermediario/ping
+          curl --fail http://127.0.0.1:3000/api/avancado/state/bank
+          curl --fail --range 0-63 http://127.0.0.1:3000/api/avancado/video -o /tmp/video-part
+          test "$(wc -c < /tmp/video-part)" -eq 64
+          google-chrome --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=2000 --dump-dom http://127.0.0.1:3000/ > /tmp/catalogo.html
+          grep -q '48 de 48 projetos' /tmp/catalogo.html
+          google-chrome --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --virtual-time-budget=2000 --dump-dom 'http://127.0.0.1:3000/#estudo/calculadora' > /tmp/calculadora.html
+          grep -q 'id="project-title">Calculadora' /tmp/calculadora.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-web
+          path: dist/
+

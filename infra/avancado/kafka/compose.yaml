@@ -1,0 +1,46 @@
+services:
+  broker:
+    image: apache/kafka:4.1.0
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://broker:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - log:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "broker:9092", "--list"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+  criar-topico:
+    image: apache/kafka:4.1.0
+    depends_on:
+      broker: {condition: service_healthy}
+    entrypoint: ["/opt/kafka/bin/kafka-topics.sh"]
+    command: ["--bootstrap-server", "broker:9092", "--create", "--if-not-exists", "--topic", "pedidos", "--partitions", "3", "--replication-factor", "1"]
+  pedidos:
+    build: .
+    command: ["python", "pedidos.py"]
+    ports: ["127.0.0.1:8088:8088"]
+    depends_on:
+      criar-topico: {condition: service_completed_successfully}
+    restart: on-failure
+  expedicao:
+    build: .
+    command: ["python", "-u", "expedicao.py"]
+    depends_on:
+      criar-topico: {condition: service_completed_successfully}
+    restart: on-failure
+    volumes:
+      - expedicao:/data
+volumes:
+  log:
+  expedicao:

@@ -1,0 +1,17 @@
+.oficina{display:grid;gap:1rem;max-width:48rem;margin-inline:auto;font:inherit}
+.oficina form{display:grid;gap:.8rem}
+.oficina label{display:grid;gap:.3rem;font-size:.9em;text-align:left}
+.oficina input,.oficina select{min-width:0;font:inherit;color:inherit;background:transparent;border:1px solid currentColor;border-radius:.35rem;padding:.6rem}
+.oficina select option{color:#1d292b;background:#faf8f3}
+.oficina input[type=checkbox]{width:1.15em;height:1.15em}
+.oficina button{font:inherit;cursor:pointer;color:inherit;background:transparent;border:1px solid currentColor;border-radius:.35rem;padding:.45rem .8rem}
+.oficina button:disabled{opacity:.5;cursor:default}
+.of-actions,.of-line{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.of-line{padding:.6rem 0;border-bottom:1px solid #8886}
+.of-line>span{flex:1;min-width:8rem;overflow-wrap:anywhere}
+.of-status{font-weight:600;overflow-wrap:anywhere}
+.oficina .of-board{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;width:min(100%,18rem)}
+.of-board button{aspect-ratio:1;font-size:1.5rem}
+.oficina .of-clock{font-variant-numeric:tabular-nums;font-size:clamp(2rem,8vw,4rem)}
+.oficina p,.oficina ol{margin:0}
+

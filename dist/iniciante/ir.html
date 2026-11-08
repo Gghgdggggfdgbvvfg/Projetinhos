@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Abrir atalho</title><main><h1>Abrir atalho</h1><p id="message">Buscando o endereço…</p></main>
+<script type="module">
+import {httpAddress} from './encurtador.js';
+let target;
+try {
+  const entries=JSON.parse(localStorage.getItem('portfolio.iniciante.atalhos')||'[]');
+  target=httpAddress(entries.find(x=>x.code===location.hash.slice(1))?.url);
+} catch { /* O navegador pode bloquear armazenamento local. */ }
+if(target) location.replace(target);
+else document.querySelector('#message').textContent='Este atalho não foi encontrado. Abra-o no navegador em que ele foi criado.';
+</script></html>
